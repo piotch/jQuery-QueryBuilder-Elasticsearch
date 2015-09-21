@@ -1,6 +1,6 @@
 # jQuery QueryBuilder Elasticsearch
 
-Allows to export [jQuery QueryBuilder](http://mistic100.github.io/jQuery-QueryBuilder) rules as an Elasticsearch [bool query https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html].
+Allows to export [jQuery QueryBuilder](http://mistic100.github.io/jQuery-QueryBuilder) rules as an Elasticsearch [bool query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html).
 
 ### Dependencies
  * jQuery QueryBuilder >= 2.0
