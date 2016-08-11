@@ -1,17 +1,27 @@
-var basic_filters = [{
-    id: 'name',
-    label: 'Name',
-    type: 'string'
-}, {
-    id: 'price',
-    label: 'Price',
-    type: 'double',
-    validation: {
-        min: 0,
-        step: 0.01
-    },
-    description: 'Lorem ipsum sit amet'
-}];
+var basic_filters = [
+    {
+        id: 'name',
+        label: 'Name',
+        type: 'string'
+    },{
+        id: 'price',
+        label: 'Price',
+        type: 'double',
+        validation: {
+            min: 0,
+            step: 0.01
+        },
+        description: 'Lorem ipsum sit amet'
+    },{
+        id: 'score',
+        label: 'score',
+        type: 'integer',
+        validation: {
+            min: -1000,
+            step: 1
+        },
+    }
+];
 
 $(function() {
     var $b = $('#builder');
@@ -101,6 +111,8 @@ $(function() {
         );
 
     });
+
+
 
     QUnit.test("Not equal", function (assert) {
 
@@ -200,6 +212,85 @@ $(function() {
             $b.queryBuilder('getESBool'),
             {"bool": {"must":[ {"terms":{"name":["paul","mary"]}}]}},
             'Should build a range query'
+        );
+
+    });
+    QUnit.test("SQSBuilder", function (assert) {
+
+        $b.queryBuilder({
+            filters: basic_filters,
+            rules: {
+                condition: 'AND',
+                rules: [{id: 'name', field: 'name', operator: 'contains', value: "*gmail*"}]
+            }
+        });
+
+        assert.deepEqual(
+            $b.queryBuilder('getESQueryStringQuery'),
+            "name:*gmail*",
+            'Should build a normal QueryStringQuery'
+        );
+
+    });
+
+    QUnit.test("SQSGrouping", function (assert) {
+
+        $b.queryBuilder({
+            filters: basic_filters,
+            rules: {
+                condition: 'AND',
+                rules: [{id: 'name', field: 'name', operator: 'contains', value: "*gmail*"},
+                {id: 'score', field: 'score', operator: 'between', value: [5,6]}]
+            }
+        });
+
+        assert.deepEqual(
+            $b.queryBuilder('getESQueryStringQuery'),
+            "name:*gmail* AND score:[5 TO 6]",
+            'Should build a AND group QueryStringQuery'
+        );
+
+    });
+
+    QUnit.test("SQSExists", function (assert) {
+
+        $b.queryBuilder({
+            filters: basic_filters,
+            rules: {
+                condition: 'OR',
+                rules: [{id: 'name', field: 'name', operator: 'is_null', value: "*gmail*"},
+                {id: 'score', field: 'score', operator: 'is_not_null'}]
+            }
+        });
+
+        assert.deepEqual(
+            $b.queryBuilder('getESQueryStringQuery'),
+            "_missing_:name OR _exists_:score",
+            'Should build a QueryStringQuery to check if a field value is not null or another is null'
+        );
+
+    });
+
+    QUnit.test("SQSNested", function (assert) {
+
+        $b.queryBuilder({
+            filters: basic_filters,
+            rules: {
+                condition: 'AND',
+                rules: [
+                    {id: 'price', field: 'price', operator: 'between', value: [0,15]},
+                    {condition: 'OR', rules: [
+                        {id: 'name', field: 'name', operator: 'contains', value: 'handy'},
+                        {id: 'score', field: 'score', operator: 'between', value: [-1000,5]}
+                    ]}
+                ]
+            }
+        });
+
+        assert.deepEqual(
+            $b.queryBuilder('getESQueryStringQuery'),
+            "price:[0 TO 15] AND (name:handy OR score:[-1000 TO 5])",
+            'Should build a SQS query with a nested SQS sub query'
         );
 
     });
