@@ -1,2 +1,3 @@
 .idea/
 tests/query-builder.standalone.min.js
+node_modules/
