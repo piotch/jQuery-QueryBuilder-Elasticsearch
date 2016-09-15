@@ -20,3 +20,9 @@ var esQuery = $('#builder').queryBuilder('getESBool');
 ### Operators configuration
 
 The Elasticsearch plugin requires special configuration for operators to convert rules. This configuration is stored in the ```ESBoolOperators``` option, see the source code for more details.
+
+## Dev
+
+### Run tests
+
+$ grunt test --verbose
