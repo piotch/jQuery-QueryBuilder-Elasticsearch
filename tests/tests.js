@@ -20,8 +20,12 @@ var basic_filters = [
             min: -1000,
             step: 1
         },
-    }
+    },
 ];
+
+function transform_me(s) {
+    return s.toUpperCase();
+}
 
 $(function() {
     var $b = $('#builder');
@@ -379,4 +383,23 @@ $(function() {
         );
 
     });
+
+    QUnit.test("Transform", function (assert) {
+
+        $b.queryBuilder({
+            filters: basic_filters,
+            rules: {
+                condition: 'AND',
+                rules: [{id: 'name', field: 'name', operator: 'equal', value: 'paul', data: {transform: 'transform_me'}}]
+            }
+        });
+
+        assert.deepEqual(
+            $b.queryBuilder('getESBool'),
+            {"bool": {"must":[{"term":{"name":"PAUL"}}]}},
+            'Should build a term query and value is capitalized'
+        );
+
+    });
+
 });
