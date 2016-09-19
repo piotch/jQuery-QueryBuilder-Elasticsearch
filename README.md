@@ -27,4 +27,4 @@ The Elasticsearch plugin requires special configuration for operators to convert
 
 ### Run tests
 
-$ grunt test --verbose
+`$ grunt test --verbose`
