@@ -113,7 +113,6 @@ $(function() {
     });
 
 
-
     QUnit.test("Not equal", function (assert) {
 
         $b.queryBuilder({
@@ -215,6 +214,26 @@ $(function() {
         );
 
     });
+
+
+    QUnit.test("Not in", function (assert) {
+
+        $b.queryBuilder({
+            filters: basic_filters,
+            rules: {
+                condition: 'AND',
+                rules: [{id: 'name', field: 'name', operator: 'not_in', value: "paul, mary"}]
+            }
+        });
+
+        assert.deepEqual(
+            $b.queryBuilder('getESBool'),
+            {"bool": {"must_not":[ {"terms":{"name":["paul","mary"]}}]}},
+            'Should build a range query'
+        );
+
+    });
+
     QUnit.test("SQSBuilder", function (assert) {
 
         $b.queryBuilder({

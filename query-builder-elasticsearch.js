@@ -29,7 +29,8 @@
             greater:          function(v){ return {'gt': v}; },
             greater_or_equal: function(v){ return {'gte': v}; },
             between:          function(v){ return {'gte': v[0], 'lte': v[1]}; },
-            in :              function(v){ return v.split(',').map(function(e) { return e.trim();}); }
+            in :              function(v){ return v.split(',').map(function(e) { return e.trim();}); },
+            not_in:           function(v){ return v.split(',').map(function(e) { return e.trim();}); }
         },
         ESQueryStringQueryOperators: {
             is_not_null:           function(){ return "_exists_:"; },
@@ -97,7 +98,7 @@
                             part[getQueryDSLWord(rule)] = es_key_val;
                         }
 
-                        if (data.condition === 'OR' && rule.operator === 'not_equal') {
+                        if (data.condition === 'OR' && (rule.operator === 'not_equal' || rule.operator === 'not_in')) {
                             return {'bool': {'must_not': [part]}}
                         } else {
                             return part
@@ -202,11 +203,9 @@
             }
         }
 
-        if (rule.operator === 'in') {
+        if (rule.operator === 'in' || rule.operator === 'not_in') {
             return 'terms';
-        }
-
-        else {
+        } else {
             return 'range';
         }
     }
@@ -215,9 +214,8 @@
     * Get the right type of clause in the bool query
     */
     function getClauseWord(condition, operator) {
-        if (condition === 'AND' && operator !== 'not_equal') { return 'must' }
-        if (condition === 'AND' && operator === 'not_equal') { return 'must_not' }
-        if (condition === 'AND' && operator === 'not_equal') { return 'must_not' }
+        if (condition === 'AND' && (operator !== 'not_equal' && operator !== 'not_in')) { return 'must' }
+        if (condition === 'AND' && (operator === 'not_equal' || operator == 'not_in')) { return 'must_not' }
         if (condition === 'OR') { return 'should' }
     }
 
