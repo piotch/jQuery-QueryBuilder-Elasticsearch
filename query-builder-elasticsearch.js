@@ -179,7 +179,6 @@
 
                     }
                     if (rule.rules && rule.rules.length>0) {
-                        console.log(parts);
                         parts += "(" + parse(rule) + ")";
                     } else {
                         parts += make_query(rule);
