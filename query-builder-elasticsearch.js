@@ -194,19 +194,14 @@
     * Get the right type of query term in elasticsearch DSL
     */
     function getQueryDSLWord(rule) {
-        if (rule.operator === 'equal' || rule.operator === 'not_equal') {
-            if (rule.value.indexOf('*') > -1 || rule.value.indexOf('?') > -1) {
-                return 'wildcard';
-            } else {
-                return 'term';
-            }
-        }
+        var term = /^(equal|not_equal)$/.exec(rule.operator),
+            wildcard = /.(\*|\?)/.exec(rule.value),
+            terms = /^(in|not_in)$/.exec(rule.operator);
 
-        if (rule.operator === 'in' || rule.operator === 'not_in') {
-            return 'terms';
-        } else {
-            return 'range';
-        }
+        if (term !== null && wildcard !== null) { return 'wildcard'; }
+        if (term !== null) { return 'term'; }
+        if (terms !== null) { return 'terms'; } 
+        return 'range';
     }
 
     /**
