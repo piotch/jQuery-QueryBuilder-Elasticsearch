@@ -98,6 +98,8 @@
                             part[getQueryDSLWord(rule)] = es_key_val;
                         }
 
+                        // this is a corner case, when we have an "or" group and a negative operator,
+                        // we express this with a sub boolean query and must_not.
                         if (data.condition === 'OR' && (rule.operator === 'not_equal' || rule.operator === 'not_in')) {
                             return {'bool': {'must_not': [part]}}
                         } else {
