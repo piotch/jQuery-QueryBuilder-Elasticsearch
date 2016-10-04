@@ -144,7 +144,10 @@
                 }
 
                 if (['AND', 'OR'].indexOf(data.condition.toUpperCase()) === -1) {
-                    error('Unable to build Elasticsearch query String query with condition "{0}"', data.condition);
+                    throw new Error(
+                        'Unable to build Elasticsearch query String query with condition "{0}"'
+                        .replace('{0}', data.condition)
+                    );
                 }
 
                 if (!data.rules) {
@@ -165,7 +168,10 @@
                         part = "";
 
                         if (mdb === undefined) {
-                            error('Unknown elasticsearch operation for operator "{0}"', rule.operator);
+                            throw new Error(
+                                'Unknown elasticsearch operation for operator "{0}"'
+                                .replace('{0}', rule.operator)
+                            );
                         }
 
                         var es_key_val = "";
