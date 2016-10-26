@@ -30,7 +30,9 @@
             greater_or_equal: function(v){ return {'gte': v}; },
             between:          function(v){ return {'gte': v[0], 'lte': v[1]}; },
             in :              function(v){ return v.split(',').map(function(e) { return e.trim();}); },
-            not_in:           function(v){ return v.split(',').map(function(e) { return e.trim();}); }
+            not_in:           function(v){ return v.split(',').map(function(e) { return e.trim();}); },
+            is_null:          function(v){ return v; },
+            is_not_null:      function(v){ return v; }
         },
         ESQueryStringQueryOperators: {
             is_not_null:           function(){ return "_exists_:"; },
@@ -104,9 +106,13 @@
                             part[getQueryDSLWord(rule)] = es_key_val;
                         }
 
+                        if (rule.operator === 'is_null' || rule.operator === 'is_not_null') {
+                            part = {exists: {field: rule.field }};
+                        }
+
                         // this is a corner case, when we have an "or" group and a negative operator,
                         // we express this with a sub boolean query and must_not.
-                        if (data.condition === 'OR' && (rule.operator === 'not_equal' || rule.operator === 'not_in')) {
+                        if (data.condition === 'OR' && (rule.operator === 'not_equal' || rule.operator === 'not_in' || rule.operator === 'is_null')) {
                             return {'bool': {'must_not': [part]}}
                         } else {
                             return part
@@ -222,8 +228,8 @@
     * Get the right type of clause in the bool query
     */
     function getClauseWord(condition, operator) {
-        if (condition === 'AND' && (operator !== 'not_equal' && operator !== 'not_in')) { return 'must' }
-        if (condition === 'AND' && (operator === 'not_equal' || operator == 'not_in')) { return 'must_not' }
+        if (condition === 'AND' && (operator !== 'not_equal' && operator !== 'not_in' && operator !== 'is_null')) { return 'must' }
+        if (condition === 'AND' && (operator === 'not_equal' || operator == 'not_in' || operator === 'is_null')) { return 'must_not' }
         if (condition === 'OR') { return 'should' }
     }
 
