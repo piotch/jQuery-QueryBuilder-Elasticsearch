@@ -2,5 +2,5 @@
   "version": "1.0.0",
   "name": "jQuery-QueryBuilder-Elasticsearch",
   "homepage": "https://github.com/simonwfarrow/jQuery-QueryBuilder-Elasticsearch.git",
-  "main": "./dist/query-builder-elasticsearch.js"
+  "main": "./query-builder-elasticsearch.js"
 }
