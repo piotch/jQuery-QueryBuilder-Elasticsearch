@@ -30,8 +30,7 @@
             greater_or_equal: function(v){ return {'gte': v}; },
             between:          function(v){ return {'gte': v[0], 'lte': v[1]}; },
             in :              function(v){ return v.split(',').map(function(e) { return e.trim();}); },
-            not_in:           function(v){ return v.split(',').map(function(e) { return e.trim();}); },
-            contains:         function(v){ return v; }
+            not_in:           function(v){ return v.split(',').map(function(e) { return e.trim();}); }
         },
         ESQueryStringQueryOperators: {
             is_not_null:           function(){ return "_exists_:"; },
