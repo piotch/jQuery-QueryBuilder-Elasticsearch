@@ -238,6 +238,66 @@ $(function() {
 
     });
 
+    QUnit.test("Is null", function (assert) {
+
+        $b.queryBuilder({
+            filters: basic_filters,
+            rules: {
+                condition: 'AND',
+                rules: [{id: 'name', field: 'name', operator: 'is_null'}]
+            }
+        });
+
+        assert.deepEqual(
+            $b.queryBuilder('getESBool'),
+            {"bool": {"must_not":[ {"exists":{"field":"name"}}]}},
+            'Should build a must-not-exists query'
+        );
+
+    });
+
+    QUnit.test("Is not null", function (assert) {
+
+        $b.queryBuilder({
+            filters: basic_filters,
+            rules: {
+                condition: 'AND',
+                rules: [{id: 'name', field: 'name', operator: 'is_not_null'}]
+            }
+        });
+
+        assert.deepEqual(
+            $b.queryBuilder('getESBool'),
+            {"bool": {"must":[ {"exists":{"field":"name"}}]}},
+            'Should build a must-exists query'
+        );
+
+    });
+
+    QUnit.test("OR condition and null op", function (assert) {
+
+        $b.queryBuilder({
+            filters: basic_filters,
+            rules: {
+                condition: 'OR',
+                rules: [
+                    {id: 'name', field: 'name', operator: 'is_not_null'},
+                    {id: 'price', field: 'price', operator: 'is_null'}
+                ]
+            }
+        });
+
+        assert.deepEqual(
+            $b.queryBuilder('getESBool'),
+            {"bool": {"should":[
+                {"exists":{"field":"name"}},
+                {"bool":{"must_not": [{"exists": {"field":"price"}}]}}
+            ]}},
+            'Should build a should query with a bool subquery'
+        );
+
+    });
+
     QUnit.test("SQSBuilder", function (assert) {
 
         $b.queryBuilder({
